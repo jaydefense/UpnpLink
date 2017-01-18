@@ -1,0 +1,44 @@
+Android studion 2.2
+
+- Nouveau projet 
+- Nom: UpnpLink
+-> No Activity
+
+Création de la Main Activity
+-> New Activity-> Navigation Drawer Activity
+- Name: MainActivity
+- Launcher Activity :No
+
+Ajout du Fragment: PlayerFragment
+App -> new Fragment -> Fragment (Empty)
+Include Fragment factory methode: yes
+Include interface callback: yes
+Name: fragment_player
+copier le source du res/fragment_player
+copier le res/drawable/music.png
+copier le res/raw/alphaville.mp3
+copier le source du PlayerFragment
+Ajouter l'implementation dans le MainActivity
+
+
+MANIFEST:
+Ajouter les permissions
+
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
+    <uses-permission android:name="android.permission.CHANGE_WIFI_MULTICAST_STATE"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.WAKE_LOCK"/>
+Indiquer que c'est l'Activity principale (launcher)
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+
+
+Ajout du Fragment: DeviceFragment
+App -> new Fragment -> Fragment (List)
+Object kind: DeviceItem
+Include Fragment factory methode: yes
+Name:
