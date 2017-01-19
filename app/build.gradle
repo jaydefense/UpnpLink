@@ -1,5 +1,13 @@
 apply plugin: 'com.android.application'
 
+repositories {
+    mavenCentral()
+    mavenLocal()
+    maven {
+        url 'http://4thline.org/m2'
+    }
+}
+
 android {
     compileSdkVersion 25
     buildToolsVersion "25.0.2"
@@ -17,6 +25,14 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+    packagingOptions {
+        exclude 'libs/jackson-core-asl-1.9.13.jar'
+        exclude 'libs/jackson-mapper-asl-1.9.13.jar'
+        exclude 'META-INF/ASL2.0'
+        exclude 'META-INF/LICENSE'
+        exclude 'META-INF/NOTICE'
+        exclude 'META-INF/beans.xml'
+    }
 }
 
 dependencies {
@@ -24,8 +40,20 @@ dependencies {
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
+    // Cling
+    compile files('libs/seamless-http-1.1.2.jar')
+    compile files('libs/seamless-util-1.1.2.jar')
+    compile files('libs/seamless-xml-1.1.2.jar')
+    compile files('libs/cling-core-2.1.2.jar')
+    compile files('libs/cling-support-2.1.2.jar')
+    compile group: 'org.slf4j', name: 'slf4j-jdk14', version: '1.7.14'
+
     compile 'com.android.support:appcompat-v7:25.1.0'
     compile 'com.android.support:design:25.1.0'
     compile 'com.android.support:support-v4:25.1.0'
+    compile 'com.android.support:recyclerview-v7:25.1.0'
+    compile 'org.eclipse.jetty:jetty-servlet:8.1.8.v20121106'
+    compile 'org.eclipse.jetty:jetty-client:8.1.8.v20121106'
+    compile 'org.eclipse.jetty:jetty-server:8.1.8.v20121106'
     testCompile 'junit:junit:4.12'
 }

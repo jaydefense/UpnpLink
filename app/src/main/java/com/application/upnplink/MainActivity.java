@@ -1,7 +1,12 @@
 package com.application.upnplink;
 
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentManager;
@@ -15,13 +20,48 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.RelativeLayout;
+
+import android.widget.Toast;
+
+import com.application.upnplink.dummy.DummyContent;
+
+import org.fourthline.cling.android.AndroidUpnpService;
+import org.fourthline.cling.android.AndroidUpnpServiceImpl;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener,
+                    DeviceItemFragment.OnListFragmentInteractionListener,
                     PlayerFragment.OnPlayerFragmentInteractionListener {
 
     PlayerFragment playerFragment;
+    DeviceItemFragment deviceItemFragment;
+    private AndroidUpnpService upnpService;
+    private DummyContent upnpRegistryListener = new DummyContent();
+
+    private ServiceConnection serviceConnection = new ServiceConnection() {
+
+        public void onServiceConnected(ComponentName className, IBinder service) {
+            upnpService = (AndroidUpnpService) service;
+
+            // Clear the list
+            //listAdapter.clear();
+
+            // Get ready for future device advertisements
+            upnpService.getRegistry().addListener(upnpRegistryListener);
+
+            // Now add all devices to the list we already know about
+            //for (Device device : upnpService.getRegistry().getDevices()) {
+            //    registryListener.deviceAdded(device);
+            //}
+
+            // Search asynchronously for all devices, they will respond soon
+            upnpService.getControlPoint().search();
+        }
+
+        public void onServiceDisconnected(ComponentName className) {
+            upnpService = null;
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,17 +71,20 @@ public class MainActivity extends AppCompatActivity
         setSupportActionBar(toolbar);
 
         //Player
-        RelativeLayout container = (RelativeLayout) findViewById(R.id.content_main);
-        playerFragment = PlayerFragment.newInstance("1","2");
 
+        //playerFragment = PlayerFragment.newInstance("1","2");
 
+        //Device
+        deviceItemFragment = DeviceItemFragment.newInstance(1);
+/*
+        //RelativeLayout container = (RelativeLayout) findViewById(R.id.content_main);
         FragmentManager fragmentManager = getSupportFragmentManager();;
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
         fragmentTransaction.add(R.id.content_main, playerFragment,"playerfragment");
         //fragmentTransaction.addToBackStack(null);
         fragmentTransaction.commit();
-
+*/
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -60,6 +103,13 @@ public class MainActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+        // AndroidUpnpService
+        bindService(
+                new Intent(this, AndroidUpnpServiceImpl.class),
+                serviceConnection,
+                Context.BIND_AUTO_CREATE
+        );
     }
 
     @Override
@@ -88,6 +138,22 @@ public class MainActivity extends AppCompatActivity
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+
+            FragmentManager fragmentManager = getSupportFragmentManager();;
+            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+            fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+            fragmentTransaction.replace(R.id.content_main, deviceItemFragment);
+            fragmentTransaction.addToBackStack(null);
+            fragmentTransaction.commit();
+
+            if (upnpService != null) {
+               // Toast.makeText(this, R.string.searchingLAN, Toast.LENGTH_SHORT).show();
+                upnpService.getRegistry().removeAllRemoteDevices();
+                upnpService.getControlPoint().search();
+
+                return true;
+            }
+
             return true;
         }
 
@@ -117,6 +183,13 @@ public class MainActivity extends AppCompatActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    @Override
+    public void onListFragmentInteraction(DummyContent.DummyItem item) {
+        if (item != null) {
+            System.out.println(item.content);
+        }
     }
 
     @Override

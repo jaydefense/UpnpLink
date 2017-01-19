@@ -25,6 +25,7 @@
             </intent-filter>
 
         </activity>
+        <service android:name="org.fourthline.cling.android.AndroidUpnpServiceImpl"/>
     </application>
 
 </manifest>
