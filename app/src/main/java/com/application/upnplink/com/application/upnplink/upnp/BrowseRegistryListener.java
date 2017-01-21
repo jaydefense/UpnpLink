@@ -1,4 +1,4 @@
-package com.application.upnplink.dummy;
+package com.application.upnplink.com.application.upnplink.upnp;
 
 import org.fourthline.cling.model.meta.Device;
 import org.fourthline.cling.model.meta.LocalDevice;
@@ -7,9 +7,7 @@ import org.fourthline.cling.registry.DefaultRegistryListener;
 import org.fourthline.cling.registry.Registry;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Helper class for providing sample content for user interfaces created by
@@ -17,34 +15,19 @@ import java.util.Map;
  * <p>
  * TODO: Replace all uses of this class before publishing your app.
  */
-public class DummyContent extends DefaultRegistryListener {
+public class BrowseRegistryListener extends DefaultRegistryListener {
 
     /**
      * An array of sample (dummy) items.
      */
-    public static final List<DummyItem> ITEMS = new ArrayList<DummyItem>();
+    public static final List<DeviceDisplay> ITEMS = new ArrayList<DeviceDisplay>();
 
-    /**
-     * A map of sample (dummy) items, by ID.
-     */
-    public static final Map<String, DummyItem> ITEM_MAP = new HashMap<String, DummyItem>();
-
-    private static final int COUNT = 2;
-
-    static {
-        // Add some sample items.
-        for (int i = 1; i <= COUNT; i++) {
-            addItem(createDummyItem(i));
-        }
-    }
-
-    private static void addItem(DummyItem item) {
+    private static void addItem(DeviceDisplay item) {
         ITEMS.add(item);
-        ITEM_MAP.put(item.id, item);
     }
 
-    private static DummyItem createDummyItem(int position) {
-        return new DummyItem(String.valueOf(position), "Item " + position, makeDetails(position));
+    public static void clear() {
+        ITEMS.clear();
     }
 
     private static String makeDetails(int position) {
@@ -100,25 +83,20 @@ public class DummyContent extends DefaultRegistryListener {
     }
 
     public void deviceAdded(final Device device) {
-            /*
-            runOnUiThread(new Runnable() {
-                public void run() {
-                    DeviceContent d = new DeviceContent(device);
-                    int position = listAdapter.getPosition(d);
+//            runOnUiThread(new Runnable() {
+//                public void run() {
+                    DeviceDisplay d = new DeviceDisplay(device);
+                    int position = ITEMS.indexOf(d);
                     if (position >= 0) {
                         // Device already in the list, re-set new value at same position
-                        listAdapter.remove(d);
-                        listAdapter.insert(d, position);
+                        ITEMS.remove(d);
+                        ITEMS.add(position, d);
                     } else {
-                        listAdapter.add(d);
+                        ITEMS.add(d);
                     }
-                }
-            });
-            */
-        DummyItem deviceItem = new DummyItem("9", device.getDisplayString(), device.getDetails().getFriendlyName());
-        // addItem(deviceItem);
-        System.out.println("-----> " +device.getDisplayString() + " - " + device.getDetails().getFriendlyName());
-        addItem(deviceItem);
+ //               }
+ //           });
+
     }
 
     public void deviceRemoved(final Device device) {
@@ -129,27 +107,9 @@ public class DummyContent extends DefaultRegistryListener {
                 }
             });
             */
-        DummyItem deviceItem = new DummyItem("9", device.getDisplayString(), device.getDetails().getFriendlyName());
-        //deviceRecyclerViewAdapter.remove(deviceItem);
+        ITEMS.remove(new DeviceDisplay(device));
     }
 
-    /**
-     * A dummy item representing a piece of content.
-     */
-    public static class DummyItem {
-        public final String id;
-        public final String content;
-        public final String details;
 
-        public DummyItem(String id, String content, String details) {
-            this.id = id;
-            this.content = content;
-            this.details = details;
-        }
 
-        @Override
-        public String toString() {
-            return content;
-        }
-    }
 }

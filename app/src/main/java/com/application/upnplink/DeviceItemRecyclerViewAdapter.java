@@ -6,22 +6,22 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.application.upnplink.DeviceItemFragment.OnListFragmentInteractionListener;
-import com.application.upnplink.dummy.DummyContent.DummyItem;
+import com.application.upnplink.DeviceItemFragment.OnDeviceItemFragmentInteractionListener;
+import com.application.upnplink.com.application.upnplink.upnp.DeviceDisplay;
 
 import java.util.List;
 
 /**
- * {@link RecyclerView.Adapter} that can display a {@link DummyItem} and makes a call to the
- * specified {@link OnListFragmentInteractionListener}.
+ * {@link RecyclerView.Adapter} that can display a {@link DeviceDisplay} and makes a call to the
+ * specified {@link OnDeviceItemFragmentInteractionListener}.
  * TODO: Replace the implementation with code for your data type.
  */
 public class DeviceItemRecyclerViewAdapter extends RecyclerView.Adapter<DeviceItemRecyclerViewAdapter.ViewHolder> {
 
-    private final List<DummyItem> mValues;
-    private final OnListFragmentInteractionListener mListener;
+    private final List<DeviceDisplay> mValues;
+    private final OnDeviceItemFragmentInteractionListener mListener;
 
-    public DeviceItemRecyclerViewAdapter(List<DummyItem> items, OnListFragmentInteractionListener listener) {
+    public DeviceItemRecyclerViewAdapter(List<DeviceDisplay> items, OnDeviceItemFragmentInteractionListener listener) {
         mValues = items;
         mListener = listener;
     }
@@ -36,8 +36,8 @@ public class DeviceItemRecyclerViewAdapter extends RecyclerView.Adapter<DeviceIt
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
         holder.mItem = mValues.get(position);
-        holder.mIdView.setText(mValues.get(position).id);
-        holder.mContentView.setText(mValues.get(position).content);
+       // holder.mIdView.setText(mValues.get(position).getDevice().get);
+        holder.mContentView.setText(mValues.get(position).toString());
 
         holder.mView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -60,7 +60,7 @@ public class DeviceItemRecyclerViewAdapter extends RecyclerView.Adapter<DeviceIt
         public final View mView;
         public final TextView mIdView;
         public final TextView mContentView;
-        public DummyItem mItem;
+        public DeviceDisplay mItem;
 
         public ViewHolder(View view) {
             super(view);

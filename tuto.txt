@@ -42,3 +42,14 @@ App -> new Fragment -> Fragment (List)
 Object kind: DeviceItem
 Include Fragment factory methode: yes
 Name:
+
+Service Dans le MainActivity:
+- Ajouter le service et dans le onCreate et onDestroy le bind et unbind
+- Dans le AndroidManifest:
+service android:name="org.fourthline.cling.android.AndroidUpnpServiceImpl"/>
+
+BUILD
+Ajouter les repo, les dependences, les jars dans app/lib
+-dans le menu Tools->Android->Synch projet with gradle files
+
+A TESTER SUR TELEPHONE SINON PAS DE SERVICE UPNP

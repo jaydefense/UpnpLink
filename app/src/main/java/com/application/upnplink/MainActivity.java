@@ -21,22 +21,23 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import android.widget.Toast;
-
-import com.application.upnplink.dummy.DummyContent;
+import com.application.upnplink.com.application.upnplink.upnp.BrowseRegistryListener;
+import com.application.upnplink.com.application.upnplink.upnp.DeviceDisplay;
 
 import org.fourthline.cling.android.AndroidUpnpService;
 import org.fourthline.cling.android.AndroidUpnpServiceImpl;
+import org.fourthline.cling.android.FixedAndroidLogHandler;
+import org.fourthline.cling.model.meta.Device;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener,
-                    DeviceItemFragment.OnListFragmentInteractionListener,
+                    DeviceItemFragment.OnDeviceItemFragmentInteractionListener,
                     PlayerFragment.OnPlayerFragmentInteractionListener {
 
     PlayerFragment playerFragment;
     DeviceItemFragment deviceItemFragment;
     private AndroidUpnpService upnpService;
-    private DummyContent upnpRegistryListener = new DummyContent();
+    private BrowseRegistryListener registryListener = new BrowseRegistryListener();
 
     private ServiceConnection serviceConnection = new ServiceConnection() {
 
@@ -45,17 +46,17 @@ public class MainActivity extends AppCompatActivity
 
             // Clear the list
             //listAdapter.clear();
+            BrowseRegistryListener.clear();
 
             // Get ready for future device advertisements
-            upnpService.getRegistry().addListener(upnpRegistryListener);
+            upnpService.getRegistry().addListener(registryListener );
 
             // Now add all devices to the list we already know about
-            //for (Device device : upnpService.getRegistry().getDevices()) {
-            //    registryListener.deviceAdded(device);
-            //}
+            for (Device device : upnpService.getRegistry().getDevices()) {
+                registryListener.deviceAdded(device);
+            }
 
             // Search asynchronously for all devices, they will respond soon
-            upnpService.getControlPoint().search();
         }
 
         public void onServiceDisconnected(ComponentName className) {
@@ -66,6 +67,12 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // Fix the logging integration between java.util.logging and Android internal logging
+        org.seamless.util.logging.LoggingUtil.resetRootHandler(
+                new FixedAndroidLogHandler()
+        );
+
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -104,12 +111,22 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        // AndroidUpnpService
-        bindService(
+        // This will start the UPnP service if it wasn't already started
+        getApplicationContext().bindService(
                 new Intent(this, AndroidUpnpServiceImpl.class),
                 serviceConnection,
                 Context.BIND_AUTO_CREATE
         );
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (upnpService != null) {
+            upnpService.getRegistry().removeListener(registryListener);
+        }
+        // This will stop the UPnP service if nobody else is bound to it
+        getApplicationContext().unbindService(serviceConnection);
     }
 
     @Override
@@ -150,8 +167,6 @@ public class MainActivity extends AppCompatActivity
                // Toast.makeText(this, R.string.searchingLAN, Toast.LENGTH_SHORT).show();
                 upnpService.getRegistry().removeAllRemoteDevices();
                 upnpService.getControlPoint().search();
-
-                return true;
             }
 
             return true;
@@ -186,9 +201,9 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    public void onListFragmentInteraction(DummyContent.DummyItem item) {
+    public void onListFragmentInteraction(DeviceDisplay item) {
         if (item != null) {
-            System.out.println(item.content);
+            System.out.println(item.toString());
         }
     }
 

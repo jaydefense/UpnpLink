@@ -10,15 +10,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.application.upnplink.dummy.DummyContent;
-import com.application.upnplink.dummy.DummyContent.DummyItem;
-
-import java.util.List;
+import com.application.upnplink.com.application.upnplink.upnp.BrowseRegistryListener;
+import com.application.upnplink.com.application.upnplink.upnp.DeviceDisplay;
 
 /**
  * A fragment representing a list of Items.
  * <p/>
- * Activities containing this fragment MUST implement the {@link OnListFragmentInteractionListener}
+ * Activities containing this fragment MUST implement the {@link OnDeviceItemFragmentInteractionListener}
  * interface.
  */
 public class DeviceItemFragment extends Fragment {
@@ -27,7 +25,7 @@ public class DeviceItemFragment extends Fragment {
     private static final String ARG_COLUMN_COUNT = "column-count";
     // TODO: Customize parameters
     private int mColumnCount = 1;
-    private OnListFragmentInteractionListener mListener;
+    private OnDeviceItemFragmentInteractionListener mListener;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -69,7 +67,7 @@ public class DeviceItemFragment extends Fragment {
             } else {
                 recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
             }
-            recyclerView.setAdapter(new DeviceItemRecyclerViewAdapter(DummyContent.ITEMS, mListener));
+            recyclerView.setAdapter(new DeviceItemRecyclerViewAdapter(BrowseRegistryListener.ITEMS, mListener));
         }
         return view;
     }
@@ -78,11 +76,11 @@ public class DeviceItemFragment extends Fragment {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        if (context instanceof OnListFragmentInteractionListener) {
-            mListener = (OnListFragmentInteractionListener) context;
+        if (context instanceof OnDeviceItemFragmentInteractionListener) {
+            mListener = (OnDeviceItemFragmentInteractionListener) context;
         } else {
             throw new RuntimeException(context.toString()
-                    + " must implement OnListFragmentInteractionListener");
+                    + " must implement OnDeviceItemFragmentInteractionListener");
         }
     }
 
@@ -102,8 +100,8 @@ public class DeviceItemFragment extends Fragment {
      * "http://developer.android.com/training/basics/fragments/communicating.html"
      * >Communicating with Other Fragments</a> for more information.
      */
-    public interface OnListFragmentInteractionListener {
+    public interface OnDeviceItemFragmentInteractionListener {
         // TODO: Update argument type and name
-        void onListFragmentInteraction(DummyItem item);
+        void onListFragmentInteraction(DeviceDisplay item);
     }
 }
